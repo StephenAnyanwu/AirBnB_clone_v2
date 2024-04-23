@@ -1,10 +1,12 @@
 #!/usr/bin/python3
-""" Place Module for HBNB project """
+
+"""In this module defines the Place class"""
+
 from models.base_model import BaseModel
 
 
 class Place(BaseModel):
-    """ A place to stay """
+    """Impliments the Place class"""
     city_id = ""
     user_id = ""
     name = ""
