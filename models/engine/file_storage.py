@@ -85,8 +85,10 @@ class FileStorage:
             if isinstance(cls, str) and cls in self.__classes():
                 # if cls is a string, it is the name of a class
                 cls = self.__classes()[cls]
-            c = {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
-            return c
+            dict_cls = {k: v for k, v in self.__objects.items()
+                        if isinstance(v, cls)}
+            return dict_cls
+        return FileStorage.__objects
 
     def all2(self):
         """Return the dictionary '__objects' """
