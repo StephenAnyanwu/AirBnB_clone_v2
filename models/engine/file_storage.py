@@ -66,7 +66,29 @@ class FileStorage:
                    "Review": Review}
         return classes
 
-    def all(self):
+    def all(self, cls=None):
+        """
+        Return the dictionary of objects of one type of class currently
+        in storage
+
+        Parameters
+        ----------
+        cls : class, optional (default=None)
+            Class objects to be filtered if not None
+
+        Returns
+        -------
+        dict
+            A dictionary of objects of one type of class currently in storage
+        """
+        if cls:
+            if isinstance(cls, str) and cls in self.__classes():
+                # if cls is a string, it is the name of a class
+                cls = self.__classes()[cls]
+            c = {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
+            return c
+
+    def all2(self):
         """Return the dictionary '__objects' """
         return self.__objects
 
@@ -104,7 +126,23 @@ class FileStorage:
             with open(self.__file_path, 'w') as jf:
                 json.dump(new_objs, jf)
 
-    def delete(self, obj_id):
+    def delete(self, obj=None):
+        """
+        If obj is not equal to None, delete obj from __objects if it’s inside
+
+        Parameters
+        ----------
+        object : class oject, optional (default=None)
+            Object to be deleted from __objects
+        """
+        if obj:
+            obj_to_delete = f"{obj.__class__.__name__}.{obj.id}"
+            try:
+                del self.__objects[obj_to_delete]
+            except Exception as e:
+                pass
+
+    def delete2(self, obj_id):
         """Delete object with id equals 'obj_id' and update
         the file __file_path.
 
