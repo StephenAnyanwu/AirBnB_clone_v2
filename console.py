@@ -53,6 +53,9 @@ class HBNBCommand(cmd.Cmd):
         and prints the id
         Usage: create <class name> <param 1> <param 2> <param 3>...
         Param syntax: <key name>=<value>
+        value can be a string, integer, float or boolean. If string,
+        with more than a word, use double quotes to enclose it and if
+        it contains spaces, use single underscore instead.
         """
         try:
             if not args:
@@ -174,13 +177,13 @@ class HBNBCommand(cmd.Cmd):
         """
         if not line:
             # If no class name is passed, print all objects
-            listed_objs = [str(obj) for obj in models.storage.all().values()]
+            listed_objs = [str(obj) for obj in models.storage.all2().values()]
             print(listed_objs)
             return
         elif line in self.CLASSES:
             # If class name is passed and it exist
             listed_objs = []
-            for obj_id, obj in models.storage.all().items():
+            for obj_id, obj in models.storage.all2().items():
                 class_name = obj_id.split(".")[0]
                 if class_name == line:
                     listed_objs.append(str(obj))
@@ -227,7 +230,7 @@ class HBNBCommand(cmd.Cmd):
             # If id is not passed
             print("** instance id missing **")
             return
-        elif args[0] + "." + args[1] not in models.storage.all():
+        elif args[0] + "." + args[1] not in models.storage.all2():
             # If class name and id passed doesn't exist
             print("** no instance found **")
             return

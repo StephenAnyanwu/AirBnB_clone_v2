@@ -22,13 +22,17 @@ class FileStorage:
     __classes()
         Import classes from modules in models package and return a
         dictionary of classes
-    all()
+    all(cls=None)
+      Return the dictionary of objects of one type of class currently
+      in storage
+    all2()
         Return the dictionary '__objects'
     new(obj)
-        Set in '__objects' the 'obj' with key <obj class name>.id
+        Set in '__objects' the 'obj' with key as <obj class name>.id and
+        and value <obj>
     save()
         Serialize '__objects' to the JSON file (path: __file_path)
-    delete(obj_id)
+    delete_by_id(obj_id)
         Delete object with id equals 'obj_id' and update
         the file __file_path.
     reload()
@@ -69,7 +73,8 @@ class FileStorage:
     def all(self, cls=None):
         """
         Return the dictionary of objects of one type of class currently
-        in storage
+        in file storage if cls is not None, else a dictionary of all
+        objects
 
         Parameters
         ----------
@@ -79,15 +84,16 @@ class FileStorage:
         Returns
         -------
         dict
-            A dictionary of objects of one type of class currently in storage
+            A dictionary of objects of one type of class currently in file storage
+            if cls is not None, else a dictionary of all objects in file storage
         """
         if cls:
             if isinstance(cls, str) and cls in self.__classes():
                 # if cls is a string, it is the name of a class
                 cls = self.__classes()[cls]
-            dict_cls = {k: v for k, v in self.__objects.items()
+            objs_dict = {k: v for k, v in self.__objects.items()
                         if isinstance(v, cls)}
-            return dict_cls
+            return objs_dict
         return FileStorage.__objects
 
     def all2(self):
@@ -95,11 +101,12 @@ class FileStorage:
         return self.__objects
 
     def new(self, obj):
-        """Set in '__objects' the 'obj' with key <obj class name>.id
+        """Set in '__objects' the 'obj' with key as <obj class name>.id and
+            and value <obj>
 
             Paramters
             ---------
-            obj : any object in models.base_model module (e.g BaseModel)
+            obj : any object in models module (e.g User)
         """
         if obj is not None:
             key = f"{obj.__class__.__name__}.{obj.id}"
@@ -108,23 +115,19 @@ class FileStorage:
     def save(self):
         """Serialize '__objects' to the JSON file (path: __file_path)"""
         # Holds new objects (data) to be serialised
-        new_objs = {}
-        for key, obj_name in self.__objects.items():
-            new_objs[key] = obj_name.to_dict()
+        new_objs = self__objects.copy()
         try:
             #  If file exist, load its content to a variable
             with open(self.__file_path, 'r') as jf:
                 json_to_py = json.load(jf)
             if type(json_to_py) is dict:
                 #  Modify the loaded file content with new objects
-                for key, obj_dict in new_objs.items():
-                    if key not in json_to_py:
-                        json_to_py[key] = obj_dict
+                json_to_py.update(new_objs)
             new_objs = json_to_py
         except Exception as e:
             pass
         finally:
-            #  Modify the file with new objects (data)
+            #  Modify the stoarge file with new objects (data)
             with open(self.__file_path, 'w') as jf:
                 json.dump(new_objs, jf)
 
@@ -144,9 +147,9 @@ class FileStorage:
             except Exception as e:
                 pass
 
-    def delete2(self, obj_id):
+    def delete_by_id(self, obj_id):
         """Delete object with id equals 'obj_id' and update
-        the file __file_path.
+        the file __file_path (storage).
 
         Parameters
         ----------

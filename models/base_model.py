@@ -1,11 +1,15 @@
 #!/usr/bin/python3
 
 """In this module defines the BaseModel class"""
-
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import ForeignKey, create_engine
 import uuid
 from datetime import datetime
 import re
-from models import storage
+
+
+Base = declarative_base()
 
 
 class BaseModel:
@@ -33,6 +37,11 @@ class BaseModel:
     __str__()
          Return and print the string representation of BaseModel object
     """
+
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+    updated_at = Column(DateTime, default=datetime.now, nullable=False)
+  
     def __init__(self, *args, **kwargs):
         """
         Parameters
@@ -64,16 +73,16 @@ class BaseModel:
                         # If key in kwargs is not the instance attribute except
                         # '__class__', create instance attribute with key/value
                         setattr(self, key, value)
-        else:
-            storage.new(self)
-
+        
     def save(self):
         """
         Update the public instance attribute 'updated_at' with the current
         datetime (i.e the current datetime object is saved)and save the
         object (user data) in a file
         """
+        from models import storage
         self.updated_at = datetime.now()
+        storage.new(self)
         storage.save()
 
     def to_dict(self):
@@ -87,8 +96,15 @@ class BaseModel:
         obj_dict['__class__'] = self.__class__.__name__
         obj_dict['created_at'] = self.created_at.isoformat()
         obj_dict['updated_at'] = self.updated_at.isoformat()
+        if "_sa_instance_state" in obj_dict:
+            del obj_dict["_sa_instance_state"]
         return obj_dict
-
+    
+    def delete(self):
+        """Delete the current instance from the storage (models.storage)"""
+        from models import storage
+        storage.delete(self)
+  
     def __str__(self):
         """
         Return and print the string representation of BaseModel object
