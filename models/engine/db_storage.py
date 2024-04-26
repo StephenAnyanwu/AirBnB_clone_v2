@@ -69,7 +69,15 @@ class DBStorage:
                 # Retrieve from database all objects of subclass and append
                 # them to objs list
                 objs.extend(self.__session.query(subclass).all())
-        return {f'{objs.__class__.__name__}.{obj.id}': obj for obj in objs}
+        objs_dict = {}
+        for obj in objs:
+            key = f"{objs.__class__.__name__}.{obj.id}"
+            try:
+                del obj._sa_instance_state
+                obj[key] = obj
+            except Exception as e:
+                pass
+        return objs_dict
 
     def new(self, obj):
         """
@@ -107,5 +115,3 @@ class DBStorage:
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
-            
-    
