@@ -102,7 +102,7 @@ class FileStorage:
 
     def new(self, obj):
         """Set in '__objects' the 'obj' with key as <obj class name>.id and
-            and value <obj>
+           value <obj>
 
             Paramters
             ---------
@@ -137,7 +137,7 @@ class FileStorage:
 
         Parameters
         ----------
-        object : class oject, optional (default=None)
+        obj : class object, optional (default=None)
             Object to be deleted from __objects
         """
         if obj:
@@ -177,3 +177,7 @@ class FileStorage:
                 self.__objects[id_] = self.__classes()[obj_name](**obj_dict)
         except Exception as e:
             pass
+
+    def close(self):
+        """call reload() method for deserializing the JSON file to objects"""
+        self.reload()
