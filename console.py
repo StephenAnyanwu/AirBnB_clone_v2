@@ -68,17 +68,27 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
                 return
             params = {}
-            commands = args.split(" ")
+            args = args.split(" ")
+            commands = []
+            tmp = None
+            for i in range(len(args)):
+                if tmp is args[i]:
+                    continue
+                if i != len(args) - 1:
+                    if ('=' and '"') in args[i] and args[i+1][-1] == '"':
+                        concat = args[i] + ' ' + args[i+1]
+                        commands.append(concat)
+                        tmp = args[i+1]
+                        continue
+                commands.append(args[i])
             for i in range(1, len(commands)):
                 key = commands[i].split("=")[0]
                 value = commands[i].split("=")[1]
-                if value.startswith('"'):
-                    value = value.strip('"').replace("_", " ")
-                else:
-                    try:
-                        value = eval(value)
-                    except Exception as e:
-                        continue
+                value = value.strip('"').replace("_", " ")
+                try:
+                    value = eval(value)
+                except Exception as e:
+                    pass
                 params[key] = value
             if len(params) == 0:
                 new_obj = self.CLASSES[class_name]()
@@ -88,7 +98,8 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
             print(new_obj.id)
         except Exception as e:
-            pass
+            print(e)
+            return
 
     def complete_create(self, text, line, begidx, endidx):
         """

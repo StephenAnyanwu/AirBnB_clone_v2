@@ -11,8 +11,6 @@ The sript takes the following steps:
     Create a new the symbolic link /data/web_static/current on the web server,
     linked to the new version of your code
     (/data/web_static/releases/<archive filename without extension>).
-
-execute fab -f 2-do_deploy_web_static.py do_deploy -i ~/.ssh/id_rsa -u ubuntu
 """
 
 from datetime import datetime

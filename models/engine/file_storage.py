@@ -84,15 +84,16 @@ class FileStorage:
         Returns
         -------
         dict
-            A dictionary of objects of one type of class currently in file storage
-            if cls is not None, else a dictionary of all objects in file storage
+            A dictionary of objects of one type of class currently
+            in file storage if cls is not None, else a dictionary of
+            all objects in file storage
         """
         if cls:
             if isinstance(cls, str) and cls in self.__classes():
                 # if cls is a string, it is the name of a class
                 cls = self.__classes()[cls]
             objs_dict = {k: v for k, v in self.__objects.items()
-                        if isinstance(v, cls)}
+                         if isinstance(v, cls)}
             return objs_dict
         return FileStorage.__objects
 
@@ -115,7 +116,9 @@ class FileStorage:
     def save(self):
         """Serialize '__objects' to the JSON file (path: __file_path)"""
         # Holds new objects (data) to be serialised
-        new_objs = self__objects.copy()
+        new_objs = {}
+        for key, obj_name in self.__objects.items():
+            new_objs[key] = obj_name.to_dict()
         try:
             #  If file exist, load its content to a variable
             with open(self.__file_path, 'r') as jf:
